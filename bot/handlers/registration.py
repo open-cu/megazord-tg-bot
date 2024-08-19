@@ -1,45 +1,42 @@
-from aiogram import Router, types, Dispatcher, Bot
+import logging
+from aiogram import Router, types
 from aiogram.filters import Command
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
-from aiogram.fsm.storage.memory import MemoryStorage
+from config import BASE_URL
+from utils.token_manager import TokenManager
 
 router = Router()
 
-class RegistrationState(StatesGroup):
-    waiting_for_email = State()
-    waiting_for_code = State()
+token_manager = TokenManager()  # Создаем экземпляр TokenManager
 
-@router.message(Command(commands=["start"]))
-async def cmd_start(message: types.Message, state: FSMContext):
-    await message.answer("👋 Добро пожаловать! Пожалуйста, введите вашу почту 📧")
-    await state.set_state(RegistrationState.waiting_for_email)
+@router.message(Command("start"))
+async def start(message: types.Message):
+    command_with_args = message.text.split()
 
-@router.message(RegistrationState.waiting_for_email)
-async def process_email(message: types.Message, state: FSMContext, bot: Bot):
-    email = message.text
-    # Сохраните email в состоянии
-    await state.update_data(email=email)
+    if len(command_with_args) < 2:
+        await message.answer("👋 Привет! Этот бот предназначен для отправки уведомлений участникам хакатонов.")
+        return
 
-    # Генерация и отправка кода на email (реализуйте отправку кода)
-    code = "123456"  # Пример кода, замените на генерацию и отправку реального кода
-    await bot.send_message(message.chat.id, f"📧 Код отправлен на почту: {email} ✅")
+    user_uuid = command_with_args[1]  # Получаем UUID напрямую
 
-    # Переход к следующему состоянию
-    await state.set_state(RegistrationState.waiting_for_code)
+    if not user_uuid:
+        await message.answer("Упс! 😅 Кажется, не удалось найти тебя. Попробуй еще раз!")
+        return
 
-@router.message(RegistrationState.waiting_for_code)
-async def process_code(message: types.Message, state: FSMContext, bot: Bot):
-    user_data = await state.get_data()
-    correct_code = "123456"  # Пример кода, замените на реальный код
+    telegram_id = message.from_user.id
 
-    if message.text == correct_code:
-        await message.answer("🎉 Код подтвержден! Регистрация завершена ✅")
-        await state.clear()
-    else:
-        await message.answer("❌ Неверный код.")
-        # Генерация и отправка нового кода
-        new_code = "654321"  # Пример нового кода
-        await bot.send_message(message.chat.id, f"🔄 Новый код отправлен на почту {user_data['email']} 📧")
-        # Сохраняем новый код для последующей проверки
-        await state.update_data(correct_code=new_code)
+    try:
+        response = await token_manager.request_with_token(
+            method="POST",
+            url=f"{BASE_URL}link_telegram",
+            params={"user_uuid": user_uuid, "telegram_id": telegram_id},  # Передаем как параметры запроса
+            headers={"accept": "application/json"}
+        )
+
+        if response.status_code == 200:
+            await message.answer(
+                "🎉 Ура! Твой Telegram ID успешно привязан к аккаунту. Теперь мы сможем держать тебя в курсе всех событий! 🚀")
+        else:
+            await message.answer("Ой! 😕 Что-то пошло не так... Попробуй еще раз чуть позже.")
+    except Exception as e:
+        logging.error(f"Ошибка: {e}")
+        await message.answer("❌ Произошла ошибка. Пожалуйста, попробуйте снова позже.")
