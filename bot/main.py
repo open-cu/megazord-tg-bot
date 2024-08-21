@@ -11,6 +11,7 @@ logging.basicConfig(level=logging.INFO)
 
 token_manager = TokenManager()
 
+
 async def set_commands(bot: Bot):
     commands = [
         BotCommand(command="/start", description="Начать диалог 🤖"),
@@ -18,9 +19,11 @@ async def set_commands(bot: Bot):
     ]
     await bot.set_my_commands(commands)
 
+
 async def on_startup(bot: Bot, dp: Dispatcher):
     await set_commands(bot)
     await token_manager.refresh_token()  # Принудительное обновление токена при старте
+
 
 async def main():
     bot = Bot(token=BOT_TOKEN)
@@ -28,6 +31,7 @@ async def main():
     dp.include_router(registration.router)
     await on_startup(bot, dp)
     await dp.start_polling(bot)
+
 
 if __name__ == "__main__":
     asyncio.run(main())

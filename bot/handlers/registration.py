@@ -28,7 +28,7 @@ async def start(message: types.Message):
         response = await token_manager.request_with_token(
             method="POST",
             url=f"{BASE_URL}link_telegram",
-            params={"user_uuid": user_uuid, "telegram_id": telegram_id},  # Передаем как параметры запроса
+            params={"user_id": user_uuid, "telegram_id": telegram_id},  # Передаем как параметры запроса
             headers={"accept": "application/json"}
         )
 
