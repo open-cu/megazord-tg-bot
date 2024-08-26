@@ -1,5 +1,4 @@
 import logging
-from urllib.parse import urljoin
 
 import httpx
 from config import API_URL
@@ -23,18 +22,17 @@ class TokenManager:
     async def request_with_token(self, method: str, url: str, **kwargs):
         token = await self.get_token()
 
-        url = urljoin(API_URL, url)
         headers = kwargs.get("headers", {})
         headers["Authorization"] = f"Bearer {token}"
         kwargs["headers"] = headers
 
-        async with httpx.AsyncClient() as client:
-            response = await client.request(method, url, **kwargs)
+        async with httpx.AsyncClient(base_url=API_URL) as client:
+            response = await client.request(method=method, url=url, **kwargs)
 
             if response.status_code == 401:
                 logging.info("Токен устарел. Обновляем токен...")
                 await self.refresh_token()
                 headers["Authorization"] = f"Bearer {self.token}"
-                response = await client.request(method, url, **kwargs)
+                response = await client.request(method=method, url=url, **kwargs)
 
             return response
