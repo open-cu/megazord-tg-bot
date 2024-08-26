@@ -1,0 +1,11 @@
+version: "3.9"
+name: "megazord"
+
+services:
+  bot:
+    container_name: megazord-tg-bot
+    build:
+      context: .
+
+    env_file:
+      - .env

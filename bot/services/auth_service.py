@@ -1,13 +1,17 @@
+import logging
+from urllib.parse import urljoin
 
 import httpx
-import logging
-from config import EMAIL, PASSWORD, BASE_URL
+from config import API_URL, EMAIL, PASSWORD
 
 
 async def get_token():
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.post(BASE_URL+"auth/signin", json={"email": EMAIL, "password": PASSWORD})
+            response = await client.post(
+                urljoin(API_URL, "auth/signin"),
+                json={"email": EMAIL, "password": PASSWORD},
+            )
             response.raise_for_status()
             data = response.json()
             return data.get("token")
