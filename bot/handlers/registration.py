@@ -2,7 +2,8 @@ import logging
 
 from aiogram import Router, types
 from aiogram.filters import Command
-from utils.token_manager import TokenManager
+
+from bot.utils.token_manager import TokenManager
 
 router = Router()
 
