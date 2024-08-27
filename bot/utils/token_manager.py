@@ -1,8 +1,9 @@
 import logging
 
 import httpx
-from config import API_URL
-from services.auth_service import get_token
+
+from bot.config import API_URL
+from bot.services.auth_service import get_token
 
 
 class TokenManager:

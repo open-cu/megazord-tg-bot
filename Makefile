@@ -1,6 +1,6 @@
 TEST           = pytest $(arg)
 DC	           = docker compose
-CODE 	       = src tests
+CODE 	       = bot tests
 CONTAINER_NAME = megazord-backend
 
 .PHONY: build

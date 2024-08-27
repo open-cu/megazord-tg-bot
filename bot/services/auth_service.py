@@ -1,7 +1,8 @@
 import logging
 
 import httpx
-from config import API_URL, EMAIL, PASSWORD
+
+from bot.config import API_URL, EMAIL, PASSWORD
 
 
 async def get_token():

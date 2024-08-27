@@ -4,9 +4,10 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import BotCommand
-from config import BOT_TOKEN
-from handlers import registration
-from utils.token_manager import TokenManager
+
+from bot.config import BOT_TOKEN
+from bot.handlers import registration
+from bot.utils.token_manager import TokenManager
 
 logging.basicConfig(level=logging.INFO)
 
