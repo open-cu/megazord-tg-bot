@@ -1,0 +1,27 @@
+name: Purge untagged images
+
+# Run cleanup job every day
+on:
+  workflow_dispatch:
+    inputs:
+      keep_younger_than:
+        description: "All versions below that age at time of execution are excluded from pruning"
+        required: false
+  schedule:
+    - cron: "0 0 * * *"
+
+permissions:
+  packages: write
+
+jobs:
+  purge_untagged_images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Purge untagged images
+        uses: vlaurin/action-ghcr-prune@v0.6.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          organization: ${{ github.repository_owner }}
+          container: ${{ github.event.repository.name }}
+          prune-untagged: true
+          keep-younger-than: ${{ github.event.inputs.keep_younger_than || 7 }}
