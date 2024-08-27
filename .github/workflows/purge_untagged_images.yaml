@@ -4,8 +4,8 @@ name: Purge untagged images
 on:
   workflow_dispatch:
     inputs:
-      keep_younger_than:
-        description: "All versions below that age at time of execution are excluded from pruning"
+      keep_older_than:
+        description: "Minimum age in days of container versions to prune'"
         required: false
   schedule:
     - cron: "0 0 * * *"
@@ -24,4 +24,5 @@ jobs:
           organization: ${{ github.repository_owner }}
           container: ${{ github.event.repository.name }}
           prune-untagged: true
-          keep-younger-than: ${{ github.event.inputs.keep_younger_than || 7 }}
+          older-than: ${{ github.event.inputs.keep_older_than || 7 }}
+          keep-last: 2
