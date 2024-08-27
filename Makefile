@@ -1,7 +1,7 @@
 TEST           = pytest $(arg)
 DC	           = docker compose
-CODE 	       = bot tests
-CONTAINER_NAME = megazord-tg-bot
+CODE 	       = src tests
+CONTAINER_NAME = megazord-backend
 
 .PHONY: build
 build:
@@ -10,6 +10,7 @@ build:
 .PHONY: up
 up:
 	$(DC) up
+	docker exec -it $(CONTAINER_NAME) python src/manage.py migrate
 
 .PHONY: down
 down:
@@ -35,15 +36,15 @@ test-unit:
 
 .PHONY: test-integration
 test-integration:
-	docker exec -it $(CONTAINER_NAME) $(TEST) tests/integration --cov=./ --cov-append
+	$(TEST) tests/integration --cov=./ --cov-append
 
 .PHONY: test-e2e
 test-e2e:
-	docker exec -it $(CONTAINER_NAME) $(TEST) tests/e2e --cov=./ --cov-append
+	$(TEST) tests/e2e --cov=./ --cov-append
+
+.PHONY: test
+test: test-unit test-integration test-e2e
 
 .PHONY: report
 report:
-	$(TEST) --cov=./ --cov-report html
-
-.PHONY: ci
-ci: lint test-unit
+	$(TEST) unit integration e2e --cov=./ --cov-report html
