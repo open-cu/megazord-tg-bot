@@ -7,6 +7,10 @@ on:
       keep_older_than:
         description: "Minimum age in days of container versions to prune'"
         required: false
+      keep_last:
+        description: "Count of most recent, matching containers to exclude from pruning"
+        default: 7
+        required: false
   schedule:
     - cron: "0 0 * * *"
 
@@ -25,4 +29,4 @@ jobs:
           container: ${{ github.event.repository.name }}
           prune-untagged: true
           older-than: ${{ github.event.inputs.keep_older_than || 7 }}
-          keep-last: 2
+          keep-last: ${{ inputs.keep_last || 7 }}

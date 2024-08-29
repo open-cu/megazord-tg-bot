@@ -28,6 +28,7 @@ jobs:
       API_URL: ${{ vars.API_URL }}
       SERVICE_EMAIL: ${{ vars.SERVICE_EMAIL }}
       SERVICE_PASSWORD: ${{ secrets.SERVICE_PASSWORD }}
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
 
     steps:
       - name: Log in to the Container registry
