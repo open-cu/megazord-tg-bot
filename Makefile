@@ -1,16 +1,14 @@
 TEST           = pytest $(arg)
 DC	           = docker compose
 CODE 	       = bot tests
-CONTAINER_NAME = megazord-backend
-
+ENV			   = --env-file .env
 .PHONY: build
 build:
 	$(DC) build
 
 .PHONY: up
 up:
-	$(DC) up
-	docker exec -it $(CONTAINER_NAME) python src/manage.py migrate
+	$(DC) $(ENV) up
 
 .PHONY: down
 down:

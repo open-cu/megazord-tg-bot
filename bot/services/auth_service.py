@@ -2,7 +2,7 @@ import logging
 
 import httpx
 
-from bot.config import API_URL, EMAIL, PASSWORD
+from bot.config import API_URL, SERVICE_EMAIL, SERVICE_PASSWORD
 
 
 async def get_token():
@@ -10,7 +10,7 @@ async def get_token():
         try:
             response = await client.post(
                 url="auth/signin",
-                json={"email": EMAIL, "password": PASSWORD},
+                json={"email": SERVICE_EMAIL, "password": SERVICE_PASSWORD},
             )
             response.raise_for_status()
             data = response.json()

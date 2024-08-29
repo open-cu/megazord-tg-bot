@@ -3,12 +3,12 @@ name: "megazord-tg-bot"
 
 services:
   bot:
+    restart: unless-stopped
     container_name: megazord-tg-bot
-    build:
-      context: .
+    image: ghcr.io/open-cu/megazord-tg-bot:${TELEGRAM_BOT_IMAGE_TAG:-main}
 
     environment:
       - BOT_TOKEN=${BOT_TOKEN:?error}
-      - API_URL=${API_URL:-http://localhost:8000/api}
+      - API_URL=${API_URL:?error}
       - SERVICE_EMAIL=${SERVICE_EMAIL:?error}
       - SERVICE_PASSWORD=${SERVICE_PASSWORD:?error}
